@@ -2,8 +2,7 @@
 
 **Hide .NET payloads in PNG images**
 
-Hides .NET payloads in PNG images by embedding the payload in the `iend` chunk, which is a part of the PNG standard. The payload is compressed and encoded with Base64. The resulting image can be used to execute payloads by extracting the payload and executing it with .NET reflection. This is achieved by using the .NET method `Assembly.Load` to load the payload assembly and execute its main method. This is achieved by using the PowerShell command `Invoke-Expression` to execute the Base64 decoded payload.
-
+Hides .NET payloads in PNG images by embedding the payload in the `iend` chunk, which is a part of the PNG standard. The payload is compressed and encoded with Base64. The resulting image can be used to execute payloads by extracting the payload and executing it with .NET reflection. This is achieved by using the .NET method `Assembly.Load` to load the payload assembly and execute its main method. 
 ---
 
 ## Quick Start
