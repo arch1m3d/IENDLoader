@@ -1,7 +1,0 @@
-# ShadowForge Requirements
-
-# Modern UI framework
-customtkinter>=5.2.0
-
-# For building standalone executable
-pyinstaller>=6.0

@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec file for IENDLoader - Windows x64
-# Build command: pyinstaller build_modern_windows.spec
+# PyInstaller spec file for IENDLoader - macOS
+# Build command: pyinstaller build_macos.spec
 
 block_cipher = None
 
@@ -9,7 +9,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['customtkinter'],
+    hiddenimports=['customtkinter', 'tkinter', '_tkinter'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -36,17 +36,17 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='IENDLoader.exe',
+    name='IENDLoader',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,  # No console window for stealth
+    console=False,  # No console window
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch='x86_64',
+    target_arch=None,  # Auto-detect (arm64 on M1/M2/M3, x86_64 on Intel)
     codesign_identity=None,
     entitlements_file=None,
     icon=None,
