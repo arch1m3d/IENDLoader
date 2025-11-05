@@ -43,21 +43,21 @@ class IENDLoaderApp(ctk.CTk):
         header_frame.pack(pady=20, padx=20, fill="x")
         
         # Animated title
-        self.title_label = ctk.CTkLabel(
+            self.title_label = ctk.CTkLabel(
             header_frame,
-            text="⚡ IENDLOADER",
+            text="IENDLOADER",
             font=ctk.CTkFont(size=32, weight="bold"),
             text_color=("#00ff00", "#00cc00")
         )
-        self.title_label.pack()
+        self.title_label.pack(pady=(5, 0), anchor="center", expand=True)
         
         self.subtitle_label = ctk.CTkLabel(
-            header_frame,
-            text="Stealthy Payload Delivery System",
-            font=ctk.CTkFont(size=14),
-            text_color=("#888888", "#666666")
-        )
-        self.subtitle_label.pack(pady=(5, 0))
+        header_frame,
+        text="Hide .NET Stubs in PNGs",
+        font=ctk.CTkFont(size=14),
+        text_color=("#888888", "#666666"),
+        justify="center")
+        self.subtitle_label.pack(pady=(5, 0), anchor="center", expand=True)
         
         # Scrollable frame for main content
         scrollable_frame = ctk.CTkScrollableFrame(
