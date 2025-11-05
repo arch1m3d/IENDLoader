@@ -46,7 +46,7 @@ class IENDLoaderApp(ctk.CTk):
         header_frame.pack(pady=20, padx=20, fill="x")
         
         # Animated title
-         self.title_label = ctk.CTkLabel(
+        self.title_label = ctk.CTkLabel(
             header_frame,
             text="IENDLOADER",
             font=ctk.CTkFont(size=32, weight="bold"),
