@@ -11,7 +11,7 @@ pip install customtkinter
 python3 iendloader.py
 ```
 
-### Build Standalone EXE 
+### Build EXE 
 ```bash
 pip install customtkinter pyinstaller
 
